@@ -53,6 +53,7 @@ _lazy_stern_usage() {
  echo "\t Format: ISO 8601, e.g. 2021-08-01T00:00:00.000Z"
  echo " -n, --namespace  Specify the kubernetes namespace to fetch logs from"
  echo " -c, --context    Specify the kubernetes context to fetch logs from"
+ echo " -f, --follow     Follow logs"
 }
 
 # Function to handle options and arguments
@@ -66,6 +67,7 @@ _handle_lazy_stern_options() {
   # Flags
   help=""
   interactive=false
+  no_follow="--no-follow"
 
   while [ $# -gt 0 ]; do
     case $1 in
@@ -90,6 +92,9 @@ _handle_lazy_stern_options() {
           toIso=$(extract_argument $@)  
         fi
         shift
+        ;;
+      -f | --follow)
+        no_follow=""
         ;;
       -n | --namespace)
         if ! has_argument $@; then
@@ -212,12 +217,13 @@ lazystern () {
 
   # Fetch logs with options
   if [ -z "$toIso"] ; then
-    stern --namespace $namespace --context $context --since $since -o raw --no-follow --only-log-lines ".*"
+    stern --namespace $namespace --context $context --since $since -o raw $no_follow --only-log-lines ".*"
   else
-    stern --namespace $namespace --context $context --since $since -o raw --no-follow -t --only-log-lines ".*" | awk -v to="$toIso" '$1 <= to {first = $1; $1=""; print $0}'
+    stern --namespace $namespace --context $context --since $since -o raw $no_follow -t --only-log-lines ".*" | awk -v to="$toIso" '$1 <= to {first = $1; $1=""; print $0}'
   fi
 
   # Clear globals
+  unset no_follow
   unset toIso
   unset since
   unset help

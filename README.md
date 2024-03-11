@@ -25,6 +25,7 @@ Options:
 	 Format: ISO 8601, e.g. 2021-08-01T00:00:00.000Z
  -n, --namespace  Specify the kubernetes namespace to fetch logs from
  -c, --context    Specify the kubernetes context to fetch logs from
+ -f, --follow     Follow logs
 ```
 
 ### ISO Helper
