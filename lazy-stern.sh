@@ -168,7 +168,7 @@ _run_lazy_stern_interactive_mode () {
     read _rel_items
     toIso="$(iso -d "$_rel_items")"
   fi
-  if ! [ -z "$toIso"] ; then
+  if ! [ -z "$toIso" ]; then
     echo "skipping logs after: $toIso"  >&2
   fi
 }
@@ -188,7 +188,7 @@ lazystern () {
       all_dependencies_installed=false
     fi
   done
-  if ! $all_dependencies_installed; then
+  if ! $all_dependencies_installed ; then
     echo "Please install missing dependencies before running this script."  >&2
     return
   fi
@@ -216,7 +216,8 @@ lazystern () {
   fi
 
   # Fetch logs with options
-  if [ -z "$toIso"] ; then
+  if [[ -z "$toIso" ]]; then
+    echo "false"
     stern --namespace $namespace --context $context --since $since -o raw $no_follow --only-log-lines ".*"
   else
     stern --namespace $namespace --context $context --since $since -o raw $no_follow -t --only-log-lines ".*" | awk -v to="$toIso" '$1 <= to {first = $1; $1=""; print $0}'
@@ -229,5 +230,6 @@ lazystern () {
   unset help
   unset namespace
   unset context
+  unset interactive
 }
 alias lstern=lazystern
